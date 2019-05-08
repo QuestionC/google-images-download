@@ -42,6 +42,19 @@ args_list = ["keywords", "keywords_from_file", "prefix_keywords", "suffix_keywor
              "thumbnail", "language", "prefix", "chromedriver", "related_images", "safe_search", "no_numbering",
              "offset", "no_download","save_source"]
 
+def parse_config_file(config_file_name):
+    records = []
+    json_file = json.load(open(config_file_name))
+    for record in json_file['Records']:
+        arguments = {}
+        for i in args_list:
+            arguments[i] = None
+        for key, value in record.items():
+            arguments[key] = value
+        records.append(arguments)
+
+    return records
+
 def user_input():
     parser = argparse.ArgumentParser()
     
@@ -107,15 +120,7 @@ def user_input():
         if any(key != 'config_file' for key in arguments):
             print('Config file provided, ignoring other provided arguments')
 
-        records = []
-        json_file = json.load(open(config_file_name))
-        for record in json_file['Records']:
-            arguments = {}
-            for i in args_list:
-                arguments[i] = None
-            for key, value in record.items():
-                arguments[key] = value
-            records.append(arguments)
+        records = parse_config_file(config_file_name)
     else:
         records = [arguments]
     return records
